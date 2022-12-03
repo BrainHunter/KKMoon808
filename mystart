@@ -1,0 +1,58 @@
+#!/bin/sh
+
+echo "Starting telnetd - got u hacked!"
+telnetd &
+
+
+# things copied from old start script
+
+# Start Wlan:
+        #8188 EVT
+        cd /app/ko/juhua
+        insmod 8188eu.ko
+        sleep 3
+        cd /app/sh
+        #./renew_uboot &
+        ./wireless start
+        ./ntpc &
+
+# load kernel modules...
+        cd /app/ko
+        ./load3518 -i ov9712
+        sleep 1
+
+# start webserver               
+        cd /app
+        cp -f /rom/app/webs /app/
+        ./webs &        # http server and rtsp server
+        sleep 8
+        
+         ./avserver &   # avserver is important for webserver
+        sleep 3
+#       ./ojtp2p &
+#       sleep 2
+#       ./search &
+#       ./onvif_discover
+#       ./device_service 8000
+#       ./record &
+        
+
+        cd /app/bin
+        #cp reboot commod to tmp
+#       ./cli &
+#       ./daemon &
+#       ./recover &
+#       ./syslog &
+#       ./axp &
+        #./defaultip &
+        #Out of Memory invoked oom-killer auto reboot
+        sysctl -w vm.panic_on_oom=1
+        sysctl -w kernel.panic=2
+        echo 85 > /proc/sys/vm/overcommit_ratio
+#       #check License
+#       license &
+         
+
+exit 0
+
+

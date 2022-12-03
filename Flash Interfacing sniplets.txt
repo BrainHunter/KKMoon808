@@ -1,0 +1,22 @@
+# read flash directly via a bus pirate:
+# remove vcc and hold pin from board.
+
+
+# flashrom -p buspirate_spi:dev=/dev/ttyUSB2,spispeed=30k -r KKMOON_Orig_Flash_5.bin
+# xxd KKMOON_Orig_Flash_5.bin KKMOON_Orig_Flash_5.hex
+# diff KKMOON_Orig_Flash_5.hex mtdcomplete.hex | head -n 300
+
+mkdir /t
+mount -t tmpfs none /t
+cd /t
+wget http://192.168.20.6/mtdblock4-new.sqfs
+dd if=mtdblock4-new.sqfs of=/dev/mtdblock4
+sync
+
+
+#make filesystem:
+
+rm mtdblock4-new.sqfs
+mksquashfs mtdblock4-fs/ mtdblock4-new.sqfs -comp xz
+cp mtdblock4-new.sqfs /var/www/
+

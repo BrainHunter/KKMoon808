@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="en-GB"><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta name="description" content="KKMoon 805 IPCamera Webviewer uses the VLC browser plugin, works in Firefox">
+    <meta name="keywords" content="KKMoon,IP Camera,805,firefox">
+    <meta name="author" content="Melvin Sage, 2016">
+<title>KKMoon 805 IPCamera Webviewer</title>
+<style media="screen" type="text/css">
+.ptz {
+	//border-image: url('') 0px;
+	width: 40px;
+	height: 40px; /*background-image: url("http://192.168.20.104/Images/ptz_black.gif");*/ /*border:0px;*/;
+	padding: 0px;
+	display: inline-block;
+}
+
+</style>
+<script>
+<!--
+
+
+/*\
+|*|
+|*|  :: cookies.js ::
+|*|
+|*|  A complete cookies reader/writer framework with full unicode support.
+|*|
+|*|  Revision #1 - September 4, 2014
+|*|
+|*|  https://developer.mozilla.org/en-US/docs/Web/API/document.cookie
+|*|  https://developer.mozilla.org/User:fusionchess
+|*|
+|*|  This framework is released under the GNU Public License, version 3 or later.
+|*|  http://www.gnu.org/licenses/gpl-3.0-standalone.html
+|*|
+|*|  Syntaxes:
+|*|
+|*|  * docCookies.setItem(name, value[, end[, path[, domain[, secure]]]])
+|*|  * docCookies.getItem(name)
+|*|  * docCookies.removeItem(name[, path[, domain]])
+|*|  * docCookies.hasItem(name)
+|*|  * docCookies.keys()
+|*|
+\*/
+
+var docCookies = {
+  getItem: function (sKey) {
+    if (!sKey) { return null; }
+    return decodeURIComponent(document.cookie.replace(new RegExp("(?:(?:^|.*;)\\s*" + encodeURIComponent(sKey).replace(/[\-\.\+\*]/g, "\\$&") + "\\s*\\=\\s*([^;]*).*$)|^.*$"), "$1")) || null;
+  },
+  setItem: function (sKey, sValue, vEnd, sPath, sDomain, bSecure) {
+    if (!sKey || /^(?:expires|max\-age|path|domain|secure)$/i.test(sKey)) { return false; }
+    var sExpires = "";
+    if (vEnd) {
+      switch (vEnd.constructor) {
+        case Number:
+          sExpires = vEnd === Infinity ? "; expires=Fri, 31 Dec 9999 23:59:59 GMT" : "; max-age=" + vEnd;
+          break;
+        case String:
+          sExpires = "; expires=" + vEnd;
+          break;
+        case Date:
+          sExpires = "; expires=" + vEnd.toUTCString();
+          break;
+      }
+    }
+    document.cookie = encodeURIComponent(sKey) + "=" + encodeURIComponent(sValue) + sExpires + (sDomain ? "; domain=" + sDomain : "") + (sPath ? "; path=" + sPath : "") + (bSecure ? "; secure" : "");
+    return true;
+  },
+  removeItem: function (sKey, sPath, sDomain) {
+    if (!this.hasItem(sKey)) { return false; }
+    document.cookie = encodeURIComponent(sKey) + "=; expires=Thu, 01 Jan 1970 00:00:00 GMT" + (sDomain ? "; domain=" + sDomain : "") + (sPath ? "; path=" + sPath : "");
+    return true;
+  },
+  hasItem: function (sKey) {
+    if (!sKey) { return false; }
+    return (new RegExp("(?:^|;\\s*)" + encodeURIComponent(sKey).replace(/[\-\.\+\*]/g, "\\$&") + "\\s*\\=")).test(document.cookie);
+  },
+  keys: function () {
+    var aKeys = document.cookie.replace(/((?:^|\s*;)[^\=]+)(?=;|$)|^\s*|\s*(?:\=[^;]*)?(?:\1|$)/g, "").split(/\s*(?:\=[^;]*)?;\s*/);
+    for (var nLen = aKeys.length, nIdx = 0; nIdx < nLen; nIdx++) { aKeys[nIdx] = decodeURIComponent(aKeys[nIdx]); }
+    return aKeys;
+  }
+};
+
+//!-->
+</script>
+</head>
+
+<body>
+
+<div style="width:1024px;height:680px;border:1px; background-color:#D9CFED; border:1px black solid;padding:10px;color:black"> 
+	<div id="vlc_container" style="display: inline-block; width:846px; height:540px"> 
+	
+	  <!--object width="840" height="540" id="vlc_obj" classid="clsid:9BE31822-FDAD-461B-AD51-BE1D1C159921" codebase="http://downloads.videolan.org/pub/videolan/vlc/latest/win32/axvlc.cab"  
+	  style="left: 0px; top: 0px; width:840px; height:540px"> 
+	  
+	   
+        <param name="Src" value="">
+        <param name="ShowDisplay" value="yes">
+        <param name="AutoLoop" value="no">
+        <param name="AutoPlay" value="no">
+		<param name="Visible" value="-1">
+		<param name="BackColor" value="0">
+
+	-->
+	
+		<embed id="vlc" pluginspage="http://www.videolan.org" version="VideoLAN.VLCPlugin.2" type="application/x-vlc-plugin" width="846px" height="540px">
+		
+	  <!--/object--> 
+		
+		<!--/embed -->
+		<br><a href="javascript:;" onclick="play()">Play</a>
+		<a href="javascript:;" onclick="stop()">Stop</a>
+		<a href="javascript:;" onclick="myfullscreen()">Fullscreen</a>
+	  </div> 
+	<!-- PTZ Controls -->
+	<div style="width: 160px; height: 512px; padding: 0px; display: inline-block">
+
+		<div style="width: 120px; height: 120px; padding: 26px; display: inline-block">
+			<button id="panlup" class="pan ptz" disabled="disabled">&nbsp;</button><!-- Avoid spaces and newlines between buttons as it is buggering up formatting. 
+			--><button id="panup" class="pan ptz">Up</button><!--
+			--><button id="panrtup" class="pan ptz" disabled="disabled">&nbsp;</button>
+			<button id="panleft" class="pan ptz">Left</button><!--
+			--><button id="panstop" class="pan ptz">Stop</button><!--
+			--><button id="panright" class="pan ptz">Right</button>
+			<button id="pandlt" class="pan ptz" disabled="disabled">&nbsp;</button><!--
+			--><button id="pandown" class="pan ptz">Down</button><!--
+			--><button id="panrtd" class="pan ptz" disabled="disabled">&nbsp;</button>
+		</div>
+		<img id="csrimg" src="" style="visibility: hidden;">
+		<div style="width: 120px; height: 20px; display: inline-block">
+		</div>Presets
+		<div style="display: inline-block">
+			<div id="presets" style="width: 160px; height: 160px; padding: 6px">
+			<button class="ptz">0</button><button class="ptz">1</button><button class="ptz">2</button><button class="ptz">3</button><button class="ptz">4</button><button class="ptz">5</button><button class="ptz">6</button><button class="ptz">7</button><button class="ptz">8</button><button class="ptz">9</button><button class="ptz">10</button><button class="ptz">11</button><button class="ptz">12</button><button class="ptz">13</button><button class="ptz">14</button><button class="ptz">15</button></div>
+			<input id="goto" checked="checked" name="setorgoto" value="Goto" type="radio">Goto
+			<input name="setorgoto" value="Set" type="radio">Set<br></div>
+		<div style="display: inline-block; width: 100px; height: 20px">
+		</div>
+		<!-- stream -->
+		<div style="display: inline-block">
+			<input onchange="selectstream(0)" id="profile" checked="checked" name="profile" value="0" type="radio">720p
+			<input onchange="selectstream(1)" name="profile" value="1" type="radio">480
+			<input disabled="disabled" onchange="selectstream(2)" name="profile" value="2" id="lowres" style="display:none" type="radio">
+
+			
+			<br>
+	
+			</div>
+		<div style="display: inline-block; width: 100px; height: 20px">
+		</div>
+
+		<!-- IP Address  !--><!---->  <!---->
+		<div style="display: inline-block">
+			Camera IP
+			<input id="camIP" size="14" value="192.168.20.104" onchange="setCamIP(this)" type="text">:<input id="camPort" size="2" value="554" onchange="setCamPort(this)" type="text">
+		</div>
+		<div style="width: 120px; height: 20px; display: inline-block">
+
+	</div>
+</div>
+
+<br><br>
+<div>
+	IRCut <select id="irmode" name="irmode">
+	<option value="0">Daytime</option>
+	<option value="1">Nighttime</option>
+	<option value="2">Auto</option>
+	<option selected="selected" value="3">Algorythim</option>
+	</select> Colour <select id="colourmode" name="colourmode">
+	<option value="0" selected="selected">0</option>
+	<option value="1">1</option>
+	<option value="2">2</option>
+	</select> Sensitivity=<input id="irsens" size="3" value="7" type="text"> Mirror=<input id="mirror" size="3" value="0" type="text"> 
+	White Balance =<input id="whiteBal" size="3" value="1" type="text"> Flicker=<input id="flicker" size="3" value="50" type="text"> 
+	ExposureTime=<input id="expose" size="3" value="0" type="text">
+	<button id="ircut" onclick="ircut()">Set</button></div>
+	<br>
+	User 
+	<input id="user" value="admin" onchange="setUser()" type="text"> Password<input id="pass" value="anythingwilldo" onchange="setUser()" type="password">(anything will do)
+	
+				
+	 <input id="alturl" value="" onchange="selectstream(10)" type="checkbox"> Alt Url (linx only)
+
+	</div>
+	
+<script>
+<!--
+
+var vlcid;
+
+/*if("ActiveXObject" in window){
+
+vlcid = "vlc_obj";
+}
+
+else 
+*/
+
+vlcid = "vlc";
+
+
+
+var User="admin";
+var Password="doesntmatter";
+var IPAddress="192.168.20.104";
+var Port = 554;
+var Stream = "0";
+
+
+
+var c = docCookies.getItem("IPAddress");
+
+	if(c !=null) {
+		IPAddress = c;
+		document.getElementById("camIP").value = c;
+		
+	}
+
+    c = docCookies.getItem("Port");
+
+	if(c !=null) {
+		Port = c;
+		document.getElementById("camPort").value = c;
+
+	}
+
+
+
+
+var myip= document.getElementById("camIP");
+
+myip.value=IPAddress;
+
+
+var user = docCookies.getItem("user");
+if(user) document.getElementById("user").value=user;
+
+user = docCookies.getItem("password");
+if(user) document.getElementById("pass").value=user;
+
+
+
+var reload=0;
+
+
+
+
+
+var preset= document.getElementById("presets");
+
+for(i=0;i<16;i++){
+
+var button = document.createElement("button");
+
+
+button.textContent=i;
+button.className="ptz";
+button.onclick=presets;
+
+preset.appendChild(button)
+
+}
+
+
+
+/*	if(vlc=document.getElementById(vlcid)) {
+
+		vlc.parentNode.removeChild(vlc);
+		vlc=null;
+	}
+*/
+
+
+
+//insertvlc();
+
+
+  setstream();
+
+
+
+
+function setstream(){
+
+
+
+var vlc = document.getElementById(vlcid);
+
+
+//wait for plugin loaded...
+
+
+
+ if(typeof vlc.playlist == 'undefined') {
+ 
+    //    alert(vlc.outerHTML);
+	//	reload=1;
+		
+		if("ActiveXObject" in window) setTimeout(setstream,3000);
+
+ 		 else setTimeout(setstream, 1500);
+ 
+ 		return false;
+ 
+ }
+
+
+//alert(vlc);
+ //window.alert(vlc);
+	
+	//	if(reload) location.reload(); 
+	//	reload=0;
+
+		if(document.getElementById("profile").checked){
+
+			Stream=0;
+		}
+		else {
+		
+			if(document.getElementById("lowres").checked && document.getElementById("alturl").checked) Stream =2;
+
+			else Stream=1;
+			
+			
+		}
+		
+		
+//alert("stream="+Stream);
+//var id = vlc.playlist.add("rtsp://" + User + ":" + Password + "@" + IPAddress + ":" + Port + "/" + Stream ); 
+
+vlc.style.display='none';  //try to get it to display in ie - Otherwise the plugin doesn't show after IE's activex warning 
+
+
+		var streamurl = "rtsp://" + User + ":" + Password + "@" + IPAddress + ":" + Port + "/" + Stream; 
+
+		if(document.getElementById("alturl").checked) streamurl = "rtsp://" + IPAddress + "/camera-media/profile" + Stream; 
+
+
+		var id = vlc.playlist.add(streamurl); 
+
+
+		setupptbuts();
+
+
+		vlc.playlist.playItem(id);
+
+	vlc.style.display='block';	//try to get it to display in ie
+}
+
+function rld(){
+
+
+location.reload();
+
+}
+
+
+
+//pluginspage="http://www.videolan.org" version="VideoLAN.VLCPlugin.2" type="application/x-vlc-plugin" 
+
+function insertvlc(){
+
+var vlcdiv= document.getElementById("vlc_container");
+
+
+var vlc = document.createElement("EMBED");
+
+vlc.width=840;
+vlc.height=520;
+vlc.pluginspage="http://www.videolan.org";
+vlc.version = "VideoLAN.VLCPlugin.2";
+vlc.type = "application/x-vlc-plugin";
+vlc.id="vlc";
+
+vlcdiv.insertBefore(vlc, vlcdiv.firstChild);
+
+}
+
+function StopStream(){
+vlc.playlist.stop();
+}
+
+
+function myfullscreen() {
+
+			vlc.video.toggleFullscreen();
+}
+
+function play() {
+
+			vlc.playlist.play();
+
+}
+
+function stop() {
+
+			vlc.playlist.stop();
+
+}
+
+
+
+//if mirror = 1 or 3 swap up and down
+// if mirror = 2 swap left right
+
+function ptz(e){
+
+
+var action=0;
+
+
+
+
+if (e.type =="mousedown"){
+
+
+var mirror= document.getElementById("mirror").value;
+
+
+	switch(this.id) {
+
+		case "pandown":
+		action= (mirror==1 || mirror ==3)?2: 1;
+		
+		
+		
+		break;
+
+		case "panup":
+			action= (mirror==1 || mirror ==3)?1: 2;
+
+		break;
+
+		case "panright":
+		action= (mirror==2 || mirror ==3)?4:3;
+		break;
+
+		case "panleft":
+		action= (mirror==2 || mirror ==3)?3:4;
+		break;
+
+
+		default:
+			action=0;
+		
+
+	}
+} else action =0;
+
+
+
+
+
+	//	var rqst = new XMLHttpRequest();
+
+	//	rqst.open("GET", LEFT,true,user,pass);
+  	//	rqst.onreadystatechange = reportStatus;
+	//	rqst.send();
+//document.getElementById("csrimg").src="";
+document.getElementById("csrimg").src="http://" + IPAddress + "/goform/ptz.cgi?action=" +action +"&speed=25" + "&ppp=" + new Date().getTime();
+}
+
+
+function setupptbuts(){
+
+
+ var ptzbuts = document.getElementsByClassName('pan');
+
+ i=ptzbuts.length;
+
+ while(i--){
+
+	ptzbuts[i].addEventListener("mousedown", ptz); 
+	ptzbuts[i].addEventListener("mouseup", ptz);
+ }
+
+/*
+
+
+set ircut = algorythim.
+
+/goform/cmos.cgi?action=set&Mirror=0&WhiteBalance=1&Flicker=50&ExposureTime=0&IrCut=3&IrCutSensitive=7&Color=0
+*/
+
+}
+
+
+function ircut(){
+
+
+// GET /goform/cmos.cgi?action=set&Mirror=2&WhiteBalance=1&Flicker=50&ExposureTime=0&IrCut=1&IrCutSensitive=7&Color=0 HTTP/1.1 
+///goform/cmos.cgi?action=set&Mirror=0&WhiteBalance=1&Flicker=50&ExposureTime=0&IrCut=3&IrCutSensitive=7&Color=0
+
+
+	var irmode = document.getElementById("irmode").value;
+	var colour= document.getElementById("colourmode").value;
+	var irsens= document.getElementById("irsens").value;
+	var mirror= document.getElementById("mirror").value;
+	var whitebal = document.getElementById("whiteBal").value;
+	var flicker = document.getElementById("flicker").value;
+	var expose = document.getElementById("expose").value;
+
+
+
+
+	document.getElementById("csrimg").src="http://" + IPAddress + "/goform/cmos.cgi?action=set&Mirror=" + mirror + "&WhiteBalance=" + whitebal + "&Flicker=" + flicker + "&ExposureTime=" + expose + "&IrCut=" + irmode  + "&IrCutSensitive=" + irsens +"&color=" + colour  + "&ppp=" + new Date().getTime();
+}
+
+
+
+function presets(e) {
+
+	// alert
+
+//GET /goform/ptz.cgi?action=15&AddrID=0&Speed=32&PresetName=3 HTTP/1.1 
+
+if(document.getElementById("goto").checked){
+	document.getElementById("csrimg").src="http://" + IPAddress + "/goform/ptz.cgi?action=15&AddrID=0&Speed=32&PresetName=" + this.textContent + "&ppp=" + new Date().getTime();
+}
+else
+		document.getElementById("csrimg").src="http://" + IPAddress + "/goform/ptz.cgi?action=17&AddrID=0&Speed=32&PresetName=" + this.textContent + "&ppp=" + new Date().getTime();
+}
+
+
+function setCamIP(e){
+
+IPAddress= e.value;
+//alert(IPAddress);
+docCookies.setItem("IPAddress",IPAddress,Infinity);
+
+selectstream(9);
+}
+
+function setCamPort(e){
+
+Port = e.value;
+//alert(IPAddress);
+docCookies.setItem("Port",Port,Infinity);
+selectstream(9);
+}
+
+function setUser(e){
+
+User= document.getElementById("user").value;
+Password = document.getElementById("pass").value;
+
+
+docCookies.setItem("user",User,Infinity);
+}
+
+
+function selectstream(x){
+
+  /*	if(!document.getElementById("alturl").checked){ 
+  	
+  		document
+  		
+
+	}*/	
+  	
+	document.getElementById("lowres").disabled = !document.getElementById("alturl").checked;
+	
+
+
+
+
+var vlc = document.getElementById(vlcid);
+
+
+	if(typeof vlc.playlist != 'undefined') {
+
+
+		vlc.playlist.items.clear();
+
+		vlc.playlist.stop();
+
+		setstream();
+
+	}
+
+//
+}
+
+
+
+
+
+
+//!-->
+</script>
+
+
+
+
+</body></html>
