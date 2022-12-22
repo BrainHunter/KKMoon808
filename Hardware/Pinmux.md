@@ -6,15 +6,15 @@
 |0	|Shuter Trig	     |
 |1	|SDIO_CCLK_OUT	     |
 |2	|SENSOR_CLK	         |
-|3	|GPIO1_4	         |
-|4	|GPIO1_5	         |
-|5	|GPIO1_6	         |
+|3	|GPIO1_4	         | in
+|4	|GPIO1_5	         | in
+|5	|GPIO1_6	         | in
 |6	|I2C_SDA	         |
 |7	|I2C_SCL	         |
 |8	|UART1_RTSN	         |
-|9	|GPIO2_3	         |
-|10	|GPIO2_4	         |
-|11	|GPIO2_5	         |
+|9	|GPIO2_3	         | out
+|10	|GPIO2_4	         | out
+|11	|GPIO2_5	         | out
 |12	|MII_CRS	         |
 |13	|MII_COL	         |
 |14	|MII_RXD3	         |
@@ -48,11 +48,11 @@
 |42	|SFC_CLK	         |
 |43	|SFC_DOI	         |
 |44	|SFC_HOLD_IO3	     |
-|45	|GPIO5_0	         |
-|46	|GPIO5_1	         |
-|47	|GPIO5_2	         |
+|45	|GPIO5_0	         | out
+|46	|GPIO5_1	         | out
+|47	|GPIO5_2	         | IR LED out (#himm 0x20190010 0 #himm 0x20190010 4)
 |48	|PWM_OUT1	         |
-|49	|GPIO7_5	         |
+|49	|GPIO7_5	         | in
 |50	|GPIO9_0	         | Stepper Motor LR
 |51	|GPIO9_1	         | Stepper Motor LR
 |52	|GPIO9_2             | Stepper Motor LR
@@ -61,26 +61,26 @@
 |55	|GPIO9_5             | Stepper Motor UD
 |56	|GPIO9_6             | Stepper Motor UD
 |57	|GPIO9_7             | Stepper Motor UD
-|58	|GPIO8_0	         |
-|59	|GPIO8_1	         |
+|58	|GPIO8_0	         | in
+|59	|GPIO8_1	         | in
 |60	|NF_BOOT_PIN0	     |
-|61	|GPIO8_3	         |
-|62	|GPIO8_4	         |
+|61	|GPIO8_3	         | in
+|62	|GPIO8_4	         | in
 |63	|NF_BOOT_PIN1	     |
 |64	|NF_ALE	             |
 |65	|NF_WEN	             |
-|66	|GPIO7_6	         |
-|67	|GPIO7_7	         |
-|68	|GPIO5_4	         |
-|69	|GPIO5_5	         |
-|70	|GPIO5_6	         |
-|71	|GPIO5_7	         |
-|72	|GPIO0_0	         |
+|66	|GPIO7_6	         | out
+|67	|GPIO7_7	         | in
+|68	|GPIO5_4	         | in
+|69	|GPIO5_5	         | in
+|70	|GPIO5_6	         | in
+|71	|GPIO5_7	         | in
+|72	|GPIO0_0	         | out
 |73	|JTAG_TCK	         |
-|74	|GPIO0_2	         |
+|74	|GPIO0_2	         | in
 |75	|TAG_TDO	         |
-|76	|GPIO0_4	         |
-|77	|GPIO0_5	         |
+|76	|GPIO0_4	         | in
+|77	|GPIO0_5	         | out
 |78	|SVB_PWM	         |
 |79	|SYS_RSTN_OUT	     |
 |80	|VIU_CLK	         |
