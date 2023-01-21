@@ -26,7 +26,7 @@ things may not be described here but will may be documented some day
 * http control protocol + programm to control it
 * control stepper directly via console
 * cross compile tools to run on the original firmware [Link](Install-and-use-SDK.md)
-* [installation of openIPC](openIPC/install.md)
+* [installation of openIPC](openIPC/Install.md)
 
 
 ## Open topics 
