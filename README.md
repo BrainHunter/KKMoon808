@@ -25,9 +25,11 @@ things may not be described here but will may be documented some day
 * get still images via http
 * http control protocol + programm to control it
 * control stepper directly via console
+* cross compile tools to run on the original firmware [Link](Install-and-use-SDK.md)
+* [installation of openIPC](openIPC/install.md)
 
-## Open topics
+
+## Open topics 
+**but most likely are never answered since openipc is runnig.**
 * why is the app crashing when accessing the rtsp stream
-* cross-compiler test
-* kernel 
-* test openipc
+* build a kernel 
